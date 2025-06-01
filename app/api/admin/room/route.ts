@@ -1,6 +1,6 @@
-import { uploadToCloudinary } from '@/lib/cloudinaryUpload'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
+import { uploadToCloudinary } from '@/lib/cloudinaryUpload'
 
 export async function POST(request: Request) {
   try {
@@ -20,6 +20,9 @@ export async function POST(request: Request) {
     let imageUrl = null;
     if (image && image.size > 0) {
       imageUrl = await uploadToCloudinary(image);
+      if (!imageUrl) {
+        return NextResponse.json({ error: "Cloudinary yükleme hatası." }, { status: 500 })
+      }
     }
 
     const data = {
@@ -48,6 +51,7 @@ export async function POST(request: Request) {
       return NextResponse.json(room)
     }
   } catch (error) {
+    console.error('API Hatası:', error)
     return NextResponse.json({ error: "Oda kaydedilemedi." }, { status: 500 })
   }
 } 
