@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { uploadToCloudinary } from '@/lib/cloudinaryUpload'
 
 export async function POST(request: Request) {
   try {
@@ -14,16 +13,10 @@ export async function POST(request: Request) {
     const view = formData.get("view") as string
     const features = formData.get("features") as string
     const badge = formData.get("badge") as string | null
-    const image = formData.get("image") as File
     const id = formData.get("id") as string
 
-    let imageUrl = null;
-    if (image && image.size > 0) {
-      imageUrl = await uploadToCloudinary(image);
-      if (!imageUrl) {
-        return NextResponse.json({ error: "Cloudinary yükleme hatası." }, { status: 500 })
-      }
-    }
+    // Görsel yükleme kaldırıldı
+    // imageUrl artık kullanılmıyor
 
     const data = {
       name,
@@ -34,8 +27,7 @@ export async function POST(request: Request) {
       size,
       view,
       features,
-      badge,
-      ...(imageUrl && { image: imageUrl })
+      badge
     }
 
     if (id) {
